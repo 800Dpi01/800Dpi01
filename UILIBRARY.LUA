@@ -2021,43 +2021,6 @@ if setidentity then
 	setidentity(7)
 end
 
--- Protect entire UI tree from deletion
-local function protectUITree(instance)
-	if cloneref then
-		for _, child in pairs(instance:GetDescendants()) do
-			pcall(function()
-				cloneref(child)
-			end)
-		end
-	end
-	
-	if syn and syn.protect_gui then
-		for _, child in pairs(instance:GetDescendants()) do
-			pcall(function()
-				if child:IsA("GuiObject") then
-					syn.protect_gui(child)
-				end
-			end)
-		end
-	end
-	
-	if protectgui then
-		for _, child in pairs(instance:GetDescendants()) do
-			pcall(function()
-				if child:IsA("GuiObject") then
-					protectgui(child)
-				end
-			end)
-		end
-	end
-end
-
--- Apply protection to entire UI
-task.spawn(function()
-	task.wait(0.1)
-	protectUITree(StarlightUI)
-end)
-
 -- hides all old interfaces
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
