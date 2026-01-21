@@ -2074,32 +2074,6 @@ task.spawn(function()
 	protectUITree(StarlightUI)
 end)
 
--- Monitor and prevent UI deletion
-if not isStudio then
-	local uiDestroyed = false
-	StarlightUI.AncestryChanged:Connect(function()
-		if not StarlightUI.Parent and not uiDestroyed then
-			-- UI was removed, try to restore it
-			task.wait(0.1)
-			if StarlightUI and not StarlightUI.Parent then
-				if gethui then
-					StarlightUI.Parent = gethui()
-				elseif CoreGui:FindFirstChild("RobloxGui") then
-					StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
-				else
-					StarlightUI.Parent = CoreGui
-				end
-				protectUITree(StarlightUI)
-			end
-		end
-	end)
-	
-	-- Mark as destroyed only when Starlight:Destroy() is called
-	StarlightUI.Destroying:Connect(function()
-		uiDestroyed = true
-	end)
-end
-
 -- hides all old interfaces
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
