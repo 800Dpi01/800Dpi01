@@ -1,6 +1,6 @@
 --// SECTION : Core Variables
 
-local Release = ".gg/getnova"
+local Release = "dexbtho"
 local debugV = false
 
 local Starlight = {
