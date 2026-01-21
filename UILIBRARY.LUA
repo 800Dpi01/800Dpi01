@@ -1981,27 +1981,11 @@ repeat
 until buildAttempts >= 2
 
 StarlightUI.Name = (((getgenv and getgenv().InterfaceName) or StarlightUI.Name) or "Starlight Interface Suite")
-
--- Store safe reference before protection
-local SafeUIReference = StarlightUI
-if cloneref then
-	SafeUIReference = cloneref(StarlightUI)
-end
-
-Starlight.Instance = SafeUIReference
-StarlightUI = SafeUIReference
+Starlight.Instance = StarlightUI
 StarlightUI.Enabled = false
 if not isStudio then
 	pcall(function()
 		StarlightUI.OnTopOfCoreBlur = true
-	end)
-end
-
--- Prevent UI from being deleted
-StarlightUI.Archivable = false
-for _, desc in pairs(StarlightUI:GetDescendants()) do
-	pcall(function()
-		desc.Archivable = false
 	end)
 end
 
