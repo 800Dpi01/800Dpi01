@@ -1990,35 +1990,16 @@ if not isStudio then
 end
 
 -- Sets The Interface Into Roblox's GUI
--- Protect UI from deletion
-if cloneref then
-	StarlightUI = cloneref(StarlightUI)
-end
-
--- Multiple protection methods for different executors
-if syn and syn.protect_gui then
-	syn.protect_gui(StarlightUI)
-end
-
-if protectgui then
-	protectgui(StarlightUI)
-end
-
-if setidentity then
-	setidentity(2)
-end
-
 if gethui then
 	StarlightUI.Parent = gethui()
+elseif syn and syn.protect_gui then
+	syn.protect_gui(StarlightUI)
+
+	StarlightUI.Parent = CoreGui
 elseif not isStudio and CoreGui:FindFirstChild("RobloxGui") then
 	StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
 elseif not isStudio then
 	StarlightUI.Parent = CoreGui
-end
-
--- Restore identity if changed
-if setidentity then
-	setidentity(7)
 end
 
 -- hides all old interfaces
@@ -4393,20 +4374,11 @@ function Starlight:CreateWindow(WindowSettings)
 					end
 					Element.Instance.Header.Icon.Image = ElementSettings.Icon ~= nil and "rbxassetid://" .. Element.Values.Icon or ""
 
-					-- Make checkbox text and box colors follow theme
-					ThemeMethods.bindTheme(Element.Instance.Header, "TextColor3", "Foregrounds.Medium")
-					ThemeMethods.bindTheme(Element.Instance.Header.Icon, "ImageColor3", "Foregrounds.Light")
-					ThemeMethods.bindTheme(Element.Instance.Checkbox.UIStroke, "Color", "Foregrounds.Dark")
-
 					local function Set(bool)
 						if bool then
-							-- Checkbox bật: hộp rõ hơn, chữ sáng hơn
-							Tween(Element.Instance.Checkbox, { BackgroundTransparency = 0 })
-							Tween(Element.Instance.Header, { TextColor3 = Starlight.CurrentTheme.Foregrounds.Light })
+							Tween(Element.Instance.Checkbox, {BackgroundTransparency = 0})
 						else
-							-- Checkbox tắt: hộp mờ, chữ xám để dễ phân biệt
-							Tween(Element.Instance.Checkbox, { BackgroundTransparency = 0.9 })
-							Tween(Element.Instance.Header, { TextColor3 = Starlight.CurrentTheme.Foregrounds.Medium })
+							Tween(Element.Instance.Checkbox, {BackgroundTransparency = 0.9})
 						end
 
 						Element.Values.CurrentValue = bool
