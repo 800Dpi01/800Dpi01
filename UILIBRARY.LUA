@@ -9,10 +9,10 @@ local Starlight = {
 
 	WindowKeybind = "LeftControl",
 
-	Minimized = false,
+	Minimized = true,
 	Maximized = false,
 	NotificationsOpen = false,
-	DialogOpen = false,
+	DialogOpen = true,
 
 	Window = nil,
 	Notifications = nil,
