@@ -1981,7 +1981,15 @@ repeat
 until buildAttempts >= 2
 
 StarlightUI.Name = (((getgenv and getgenv().InterfaceName) or StarlightUI.Name) or "Starlight Interface Suite")
-Starlight.Instance = StarlightUI
+
+-- Store safe reference before protection
+local SafeUIReference = StarlightUI
+if cloneref then
+	SafeUIReference = cloneref(StarlightUI)
+end
+
+Starlight.Instance = SafeUIReference
+StarlightUI = SafeUIReference
 StarlightUI.Enabled = false
 if not isStudio then
 	pcall(function()
@@ -1989,17 +1997,107 @@ if not isStudio then
 	end)
 end
 
+-- Prevent UI from being deleted
+StarlightUI.Archivable = false
+for _, desc in pairs(StarlightUI:GetDescendants()) do
+	pcall(function()
+		desc.Archivable = false
+	end)
+end
+
 -- Sets The Interface Into Roblox's GUI
+-- Protect UI from deletion
+if cloneref then
+	StarlightUI = cloneref(StarlightUI)
+end
+
+-- Multiple protection methods for different executors
+if syn and syn.protect_gui then
+	syn.protect_gui(StarlightUI)
+end
+
+if protectgui then
+	protectgui(StarlightUI)
+end
+
+if setidentity then
+	setidentity(2)
+end
+
 if gethui then
 	StarlightUI.Parent = gethui()
-elseif syn and syn.protect_gui then
-	syn.protect_gui(StarlightUI)
-
-	StarlightUI.Parent = CoreGui
 elseif not isStudio and CoreGui:FindFirstChild("RobloxGui") then
 	StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
 elseif not isStudio then
 	StarlightUI.Parent = CoreGui
+end
+
+-- Restore identity if changed
+if setidentity then
+	setidentity(7)
+end
+
+-- Protect entire UI tree from deletion
+local function protectUITree(instance)
+	if cloneref then
+		for _, child in pairs(instance:GetDescendants()) do
+			pcall(function()
+				cloneref(child)
+			end)
+		end
+	end
+	
+	if syn and syn.protect_gui then
+		for _, child in pairs(instance:GetDescendants()) do
+			pcall(function()
+				if child:IsA("GuiObject") then
+					syn.protect_gui(child)
+				end
+			end)
+		end
+	end
+	
+	if protectgui then
+		for _, child in pairs(instance:GetDescendants()) do
+			pcall(function()
+				if child:IsA("GuiObject") then
+					protectgui(child)
+				end
+			end)
+		end
+	end
+end
+
+-- Apply protection to entire UI
+task.spawn(function()
+	task.wait(0.1)
+	protectUITree(StarlightUI)
+end)
+
+-- Monitor and prevent UI deletion
+if not isStudio then
+	local uiDestroyed = false
+	StarlightUI.AncestryChanged:Connect(function()
+		if not StarlightUI.Parent and not uiDestroyed then
+			-- UI was removed, try to restore it
+			task.wait(0.1)
+			if StarlightUI and not StarlightUI.Parent then
+				if gethui then
+					StarlightUI.Parent = gethui()
+				elseif CoreGui:FindFirstChild("RobloxGui") then
+					StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
+				else
+					StarlightUI.Parent = CoreGui
+				end
+				protectUITree(StarlightUI)
+			end
+		end
+	end)
+	
+	-- Mark as destroyed only when Starlight:Destroy() is called
+	StarlightUI.Destroying:Connect(function()
+		uiDestroyed = true
+	end)
 end
 
 -- hides all old interfaces
