@@ -1990,35 +1990,16 @@ if not isStudio then
 end
 
 -- Sets The Interface Into Roblox's GUI
--- Protect UI from deletion
-if cloneref then
-	StarlightUI = cloneref(StarlightUI)
-end
-
--- Multiple protection methods for different executors
-if syn and syn.protect_gui then
-	syn.protect_gui(StarlightUI)
-end
-
-if protectgui then
-	protectgui(StarlightUI)
-end
-
-if setidentity then
-	setidentity(2)
-end
-
 if gethui then
 	StarlightUI.Parent = gethui()
+elseif syn and syn.protect_gui then
+	syn.protect_gui(StarlightUI)
+
+	StarlightUI.Parent = CoreGui
 elseif not isStudio and CoreGui:FindFirstChild("RobloxGui") then
 	StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
 elseif not isStudio then
 	StarlightUI.Parent = CoreGui
-end
-
--- Restore identity if changed
-if setidentity then
-	setidentity(7)
 end
 
 -- hides all old interfaces
