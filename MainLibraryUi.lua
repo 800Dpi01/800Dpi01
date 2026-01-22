@@ -2006,7 +2006,7 @@ repeat
 
 	toDestroy, StarlightUI =
 		StarlightUI,
-		isStudio and script.Parent:FindFirstChild("Starlight V2") or loadUIFromBuild()
+		isStudio and script.Parent:FindFirstChild("Starlight V2") or loadUIFromAsset()
 	if toDestroy and not isStudio then
 		toDestroy:Destroy()
 	end
