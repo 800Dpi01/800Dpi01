@@ -1952,6 +1952,7 @@ end
 --// SECTION : Interface Management
 
 -- Interface Model - Tải từ Build.luau thay vì Asset ID để tránh bị phát hiện
+-- Build.luau được tải từ GitHub và execute để tạo UI structure
 local function loadUIFromBuild()
 	-- Tải Build.luau từ GitHub raw URL
 	local buildUrl = "https://raw.githubusercontent.com/800Dpi01/ExploitingThings/refs/heads/main/Build.luau"
@@ -1960,7 +1961,8 @@ local function loadUIFromBuild()
 	end)
 	
 	if not success or not buildCode then
-		-- Fallback: tải từ Asset ID nếu không tải được từ GitHub
+		-- Fallback: tải từ Asset ID nếu không tải được từ GitHub (với delay để tránh detection)
+		task.wait(0.5)
 		local modelId = debugV and 136653172778765 or 132866968194043
 		return game:GetObjects("rbxassetid://" .. modelId)[1]
 	end
@@ -2007,7 +2009,8 @@ local function loadUIFromBuild()
 	if success2 and result then
 		return result
 	else
-		-- Fallback: tải từ Asset ID nếu không tải được từ Build.luau
+		-- Fallback: tải từ Asset ID nếu không tải được từ Build.luau (với delay để tránh detection)
+		task.wait(0.5)
 		local modelId = debugV and 136653172778765 or 132866968194043
 		return game:GetObjects("rbxassetid://" .. modelId)[1]
 	end
