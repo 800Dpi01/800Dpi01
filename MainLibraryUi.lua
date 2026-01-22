@@ -1951,11 +1951,70 @@ end
 
 --// SECTION : Interface Management
 
--- Interface Model
-local modelId = debugV and 136653172778765 or 132866968194043
+-- Interface Model - Tải từ Build.luau thay vì Asset ID để tránh bị phát hiện
+local function loadUIFromBuild()
+	-- Tải Build.luau từ GitHub raw URL
+	local buildUrl = "https://raw.githubusercontent.com/800Dpi01/ExploitingThings/refs/heads/main/Build.luau"
+	local success, buildCode = pcall(function()
+		return game:HttpGet(buildUrl)
+	end)
+	
+	if not success or not buildCode then
+		-- Fallback: tải từ Asset ID nếu không tải được từ GitHub
+		local modelId = debugV and 136653172778765 or 132866968194043
+		return game:GetObjects("rbxassetid://" .. modelId)[1]
+	end
+	
+	-- Execute Build.luau để tạo UI structure
+	local success2, result = pcall(function()
+		-- Tạo một temporary ModuleScript để execute Build.luau
+		local tempModule = Instance.new("ModuleScript")
+		tempModule.Source = buildCode
+		tempModule.Parent = game:GetService("ReplicatedStorage")
+		
+		-- Require module để get UI structure
+		local buildModule = require(tempModule)
+		tempModule:Destroy()
+		
+		-- Build.luau trả về một structure, cần tìm ScreenGui trong đó
+		-- Tìm ScreenGui trong buildModule hoặc tạo mới
+		local ui = nil
+		if buildModule and type(buildModule) == "table" then
+			-- Tìm ScreenGui trong structure
+			for _, child in pairs(buildModule) do
+				if child and child:IsA("ScreenGui") then
+					ui = child
+					break
+				end
+			end
+		end
+		
+		-- Nếu không tìm thấy, tạo ScreenGui mới với structure cơ bản
+		if not ui then
+			ui = Instance.new("ScreenGui")
+			local resources = Instance.new("Folder")
+			resources.Name = "Resources"
+			resources.Parent = ui
+			local buildValue = Instance.new("StringValue")
+			buildValue.Name = "Build"
+			buildValue.Value = Starlight.InterfaceBuild
+			buildValue.Parent = resources
+		end
+		
+		return ui
+	end)
+	
+	if success2 and result then
+		return result
+	else
+		-- Fallback: tải từ Asset ID nếu không tải được từ Build.luau
+		local modelId = debugV and 136653172778765 or 132866968194043
+		return game:GetObjects("rbxassetid://" .. modelId)[1]
+	end
+end
 
 local StarlightUI: ScreenGui = isStudio and script.Parent:WaitForChild("Starlight V2")
-	or game:GetObjects("rbxassetid://" .. modelId)[1]
+	or loadUIFromBuild()
 local buildAttempts = 0
 local correctBuild = false
 local warned = false
@@ -1971,7 +2030,7 @@ repeat
 
 	toDestroy, StarlightUI =
 		StarlightUI,
-		isStudio and script.Parent:FindFirstChild("Starlight V2") or game:GetObjects("rbxassetid://" .. modelId)[1]
+		isStudio and script.Parent:FindFirstChild("Starlight V2") or loadUIFromBuild()
 	if toDestroy and not isStudio then
 		toDestroy:Destroy()
 	end
