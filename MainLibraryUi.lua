@@ -1980,59 +1980,96 @@ repeat
 
 until buildAttempts >= 2
 
-StarlightUI.Name = (((getgenv and getgenv().InterfaceName) or StarlightUI.Name) or "Starlight Interface Suite")
+-- Sử dụng tên ngẫu nhiên hoặc null character để tránh bị phát hiện (giống Neverlose UI)
+local randomName = HttpService:GenerateGUID(false)
+if getgenv and getgenv().InterfaceName then
+	StarlightUI.Name = getgenv().InterfaceName
+else
+	-- Sử dụng null character "\0" hoặc tên ngẫu nhiên
+	StarlightUI.Name = randomName
+end
 Starlight.Instance = StarlightUI
 StarlightUI.Enabled = false
+-- Thêm các properties để tránh bị phát hiện (giống Neverlose UI)
 if not isStudio then
 	pcall(function()
 		StarlightUI.OnTopOfCoreBlur = true
+		StarlightUI.IgnoreGuiInset = true
+		StarlightUI.ResetOnSpawn = false
+		StarlightUI.DisplayOrder = 99999999
 	end)
 end
 
--- Sets The Interface Into Roblox's GUI
+-- Sets The Interface Into Roblox's GUI (ưu tiên gethui() và protect_gui() như Neverlose UI)
 if gethui then
 	StarlightUI.Parent = gethui()
 elseif syn and syn.protect_gui then
 	syn.protect_gui(StarlightUI)
-
 	StarlightUI.Parent = CoreGui
+elseif get_hidden_gui then
+	StarlightUI.Parent = get_hidden_gui()
 elseif not isStudio and CoreGui:FindFirstChild("RobloxGui") then
 	StarlightUI.Parent = CoreGui:FindFirstChild("RobloxGui")
 elseif not isStudio then
 	StarlightUI.Parent = CoreGui
 end
 
--- hides all old interfaces
+-- hides all old interfaces (sử dụng kiểm tra Resources thay vì tên để tránh xóa nhầm)
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
-		if Interface.Name == StarlightUI.Name and Interface ~= StarlightUI then
-			Hide(Interface, true)
-			--task.wait()
-			Interface:Destroy()
+		if Interface:IsA("ScreenGui") and Interface ~= StarlightUI then
+			-- Chỉ xóa nếu là Starlight UI cũ (kiểm tra qua Resources/Build)
+			local isOldStarlight = false
+			if Interface:FindFirstChild("Resources") and Interface.Resources:FindFirstChild("Build") then
+				isOldStarlight = true
+			end
+			if isOldStarlight then
+				Hide(Interface, true)
+				--task.wait()
+				Interface:Destroy()
+			end
 		end
 	end
 elseif not isStudio and CoreGui:FindFirstChild("RobloxGui") then
 	for _, Interface in ipairs(CoreGui:FindFirstChild("RobloxGui"):GetChildren()) do
-		if Interface.Name == StarlightUI.Name and Interface ~= StarlightUI then
-			Hide(Interface, true)
-			--task.wait()
-			Interface:Destroy()
+		if Interface:IsA("ScreenGui") and Interface ~= StarlightUI then
+			local isOldStarlight = false
+			if Interface:FindFirstChild("Resources") and Interface.Resources:FindFirstChild("Build") then
+				isOldStarlight = true
+			end
+			if isOldStarlight then
+				Hide(Interface, true)
+				--task.wait()
+				Interface:Destroy()
+			end
 		end
 	end
 elseif not isStudio then
 	for _, Interface in ipairs(CoreGui:GetChildren()) do
-		if Interface.Name == StarlightUI.Name and Interface ~= StarlightUI then
-			Hide(Interface, true)
-			--task.wait()
-			Interface:Destroy()
+		if Interface:IsA("ScreenGui") and Interface ~= StarlightUI then
+			local isOldStarlight = false
+			if Interface:FindFirstChild("Resources") and Interface.Resources:FindFirstChild("Build") then
+				isOldStarlight = true
+			end
+			if isOldStarlight then
+				Hide(Interface, true)
+				--task.wait()
+				Interface:Destroy()
+			end
 		end
 	end
 else
 	for _, Interface in ipairs(PlayerGui:GetChildren()) do
-		if Interface.Name == StarlightUI.Name and Interface ~= StarlightUI then
-			Hide(Interface, true)
-			--task.wait()
-			Interface:Destroy()
+		if Interface:IsA("ScreenGui") and Interface ~= StarlightUI then
+			local isOldStarlight = false
+			if Interface:FindFirstChild("Resources") and Interface.Resources:FindFirstChild("Build") then
+				isOldStarlight = true
+			end
+			if isOldStarlight then
+				Hide(Interface, true)
+				--task.wait()
+				Interface:Destroy()
+			end
 		end
 	end
 end
