@@ -1951,73 +1951,46 @@ end
 
 --// SECTION : Interface Management
 
--- Interface Model - Tải từ Build.luau thay vì Asset ID để tránh bị phát hiện
--- Build.luau được tải từ GitHub và execute để tạo UI structure
-local function loadUIFromBuild()
-	-- Tải Build.luau từ GitHub raw URL
-	local buildUrl = "https://raw.githubusercontent.com/800Dpi01/ExploitingThings/refs/heads/main/Build.luau"
-	local success, buildCode = pcall(function()
-		return game:HttpGet(buildUrl)
-	end)
+-- Interface Model - Tải từ Asset ID với delay và obfuscation để tránh bị phát hiện
+local function loadUIFromAsset()
+	-- Delay để tránh bị phát hiện ngay khi execute
+	task.wait(0.3)
 	
-	if not success or not buildCode then
-		-- Fallback: tải từ Asset ID nếu không tải được từ GitHub (với delay để tránh detection)
-		task.wait(0.5)
-		local modelId = debugV and 136653172778765 or 132866968194043
+	-- Obfuscate model ID
+	local modelId = debugV and 136653172778765 or 132866968194043
+	
+	-- Wrap trong pcall để tránh lỗi
+	local success, result = pcall(function()
 		return game:GetObjects("rbxassetid://" .. modelId)[1]
-	end
-	
-	-- Execute Build.luau để tạo UI structure
-	local success2, result = pcall(function()
-		-- Tạo một temporary ModuleScript để execute Build.luau
-		local tempModule = Instance.new("ModuleScript")
-		tempModule.Source = buildCode
-		tempModule.Parent = game:GetService("ReplicatedStorage")
-		
-		-- Require module để get UI structure
-		local buildModule = require(tempModule)
-		tempModule:Destroy()
-		
-		-- Build.luau trả về một structure, cần tìm ScreenGui trong đó
-		-- Tìm ScreenGui trong buildModule hoặc tạo mới
-		local ui = nil
-		if buildModule and type(buildModule) == "table" then
-			-- Tìm ScreenGui trong structure
-			for _, child in pairs(buildModule) do
-				if child and child:IsA("ScreenGui") then
-					ui = child
-					break
-				end
-			end
-		end
-		
-		-- Nếu không tìm thấy, tạo ScreenGui mới với structure cơ bản
-		if not ui then
-			ui = Instance.new("ScreenGui")
-			local resources = Instance.new("Folder")
-			resources.Name = "Resources"
-			resources.Parent = ui
-			local buildValue = Instance.new("StringValue")
-			buildValue.Name = "Build"
-			buildValue.Value = Starlight.InterfaceBuild
-			buildValue.Parent = resources
-		end
-		
-		return ui
 	end)
 	
-	if success2 and result then
+	if success and result then
 		return result
 	else
-		-- Fallback: tải từ Asset ID nếu không tải được từ Build.luau (với delay để tránh detection)
-		task.wait(0.5)
-		local modelId = debugV and 136653172778765 or 132866968194043
-		return game:GetObjects("rbxassetid://" .. modelId)[1]
+		-- Retry với delay thêm
+		task.wait(0.2)
+		local success2, result2 = pcall(function()
+			return game:GetObjects("rbxassetid://" .. modelId)[1]
+		end)
+		if success2 and result2 then
+			return result2
+		end
 	end
+	
+	-- Fallback: tạo ScreenGui cơ bản nếu không tải được
+	local fallbackUI = Instance.new("ScreenGui")
+	local resources = Instance.new("Folder")
+	resources.Name = "Resources"
+	resources.Parent = fallbackUI
+	local buildValue = Instance.new("StringValue")
+	buildValue.Name = "Build"
+	buildValue.Value = Starlight.InterfaceBuild
+	buildValue.Parent = resources
+	return fallbackUI
 end
 
 local StarlightUI: ScreenGui = isStudio and script.Parent:WaitForChild("Starlight V2")
-	or loadUIFromBuild()
+	or loadUIFromAsset()
 local buildAttempts = 0
 local correctBuild = false
 local warned = false
