@@ -291,30 +291,31 @@ task.spawn(function()
 
 	task.wait(0.25)
 
-	-- ĐOẠN CODE MỚI (đã sửa để skip file đã có)
-if not isfile("seraph/cache/seraphdata.gif") then
-    makefolder("seraph/gifs")
-    tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.1, 0)}):Play()
+	if not isfile("seraph/cache/seraphdata.gif") then
 
-    -- THAY ĐỔI Ở ĐÂY: Kiểm tra từng file, nếu chưa có thì mới tải
-    for i = 1, 150 do
-        local frame_translation = string.format("frame_%03d_delay-0.02s.png", i-1)
-        local file_path = `seraph/gifs/{frame_translation}`
-        
-        -- CHỈ TẢI NẾU FILE CHƯA TỒN TẠI
-        if not isfile(file_path) then
-            writefile(file_path, get("https://raw.githubusercontent.com/ravegirls/cdn/refs/heads/main/sequence/" .. frame_translation))
-            fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150)")
-        else
-            -- Nếu file đã có, vẫn cập nhật text nhưng không tải lại
-            fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150) [cached]")
-        end
-        task.wait()  -- vẫn giữ delay để đồng bộ
-    end
-    
-    writefile("seraph/cache/seraphdata.gif", "<translation=\"completed\">")
-    -- ... phần còn lại giữ nguyên
-end
+		makefolder("seraph/gifs")
+
+		tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.1, 0)}):Play()
+
+		for i = 1, 150 do
+			local frame_translation = string.format("frame_%03d_delay-0.02s.png", i-1)
+			local path = `seraph/gifs/{frame_translation}`
+			
+			if not isfile(path) then
+				writefile(path, get("https://raw.githubusercontent.com/ravegirls/cdn/refs/heads/main/sequence/" .. frame_translation))
+			end
+
+			fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150)")
+			task.wait()
+		end
+		writefile("seraph/cache/seraphdata.gif", "<translation=\"completed\">")
+
+		task.wait(0.5)
+
+		tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+
+		task.wait(1)
+	end
 
 	if not isfile("seraph/cache/images.cache") then
 
@@ -338,15 +339,14 @@ end
 
 		for i, v in asset_list do
 			n += 1
+			local path = `seraph/imgs/{i}`
 
-			local src = get(v)
-
-			writefile(`seraph/imgs/{i}`, src)
+			if not isfile(path) then
+				writefile(path, get(v))
+			end
 
 			fps.Text = "Downloading images..".. (` ({n} / {l})`)
-			task.wait(0.5)
-
-
+			task.wait(0.1)
 		end
 		writefile("seraph/cache/images.cache", "<translation=\"completed\">")
 
@@ -428,20 +428,8 @@ local sfx = {
 	["terraria slime"] = "rbxassetid://6916371803",
 }
 for _, file in listfiles("seraph/sounds/") do
-    local success, fileName = pcall(function()
-        local parts = string.split(file, "sounds\\")
-        if parts[2] then
-            return parts[2]:gsub(".mp3", "")
-        else
-            -- Nếu không tìm thấy "sounds\\", thử tìm "sounds/"
-            parts = string.split(file, "sounds/")
-            return parts[2] and parts[2]:gsub(".mp3", "")
-        end
-    end)
-    
-    if success and fileName then
-        sfx[fileName] = getcustomasset(file)
-    end
+	local fileName = string.split(file, "sounds\\")[2]:gsub(".mp3", "")
+	sfx[fileName] = getcustomasset(file)
 end
 
 local vec2 = Vector2.new
@@ -653,7 +641,7 @@ local fonts = {}; do
 	function Register_Font(Name, Weight, Style, Asset)
 		Asset.Id = library.directory .. "/fonts/" .. Asset.Id
 		if not isfile(Asset.Id) then
-			writefile(Asset.Id, Asset.Font)
+			writefile(Asset.Id, Asset.Font or game:HttpGet(Asset.Url))
 		end
 
 		if isfile(library.directory .. "/fonts/" ..Name .. ".font") then
@@ -679,32 +667,32 @@ local fonts = {}; do
 
 	local ProggyTiny = Register_Font("ProggyTiny", 200, "Normal", {
 		Id = "ProggyTiny.ttf",
-		Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf"),
+		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
 	})
 
 	local ProggyClean = Register_Font("ProggyClean", 200, "normal", {
 		Id = "ProggyClean.ttf",
-		Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/ProggyClean.ttf")
+		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/ProggyClean.ttf"
 	})
 
 	local Pixel = Register_Font("Pixel", 200, "normal", {
 		Id = "Pixel.ttf",
-		Font = game:HttpGet("https://github.com/ravegirls/meow/raw/refs/heads/main/pixel.ttf")
+		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/pixel.ttf"
 	})
 
 	local Tahoma = Register_Font("Tahoma", 200, "normal", {
 		Id = "Tahoma.ttf",
-		Font = game:HttpGet("https://github.com/ravegirls/meow/raw/refs/heads/main/tahoma-bold.ttf")
+		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/tahoma-bold.ttf"
 	})
 
 	local Verdana = Register_Font("Verdana", 200, "normal", {
 		Id = "Verdana.ttf",
-		Font = game:HttpGet("https://seraph.wtf/assets/verdana.ttf")
+		Url = "https://seraph.wtf/assets/verdana.ttf"
 	})
 
 	local Pixel2 = Register_Font("Pixel2", 200, "normal", {
 		Id = "Pixel2.ttf",
-		Font = game:HttpGet("https://seraph.wtf/assets/pixelfont.ttf")
+		Url = "https://seraph.wtf/assets/pixelfont.ttf"
 	})
 
 	fonts = {
