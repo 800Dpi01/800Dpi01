@@ -640,85 +640,15 @@ local flags = library.flags
 local config_flags = library.config_flags
 
 -- Font importing system 
-local fonts = {}; do
-	function Register_Font(Name, Weight, Style, Asset)
-		local defaultFont = "rbxasset://fonts/families/Roboto.json"
-		
-		local success, result = pcall(function()
-			Asset.Id = library.directory .. "/fonts/" .. Asset.Id
-			if not isfile(Asset.Id) then
-				local content = Asset.Font or get(Asset.Url)
-				if not content or type(content) ~= "string" or #content < 10 then
-					error("Download failed or invalid content")
-				end
-				writefile(Asset.Id, content)
-			end
+local fonts = {}
+fonts["ProggyClean"] = Font.new("rbxasset://fonts/families/Code.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+fonts["TahomaBold"] = Font.new("rbxasset://fonts/families/Arimo.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+fonts["Pixel"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+fonts["Verdana"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+fonts["Tahoma"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+fonts["Pixel2"] = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 
-			local fontFile = Name .. ".font"
-			local Data = {
-				name = Name,
-				faces = {
-					{
-						name = "Regular",
-						weight = Weight,
-						style = Style,
-						assetId = getcustomasset(Asset.Id),
-					},
-				},
-			}
-			writefile(fontFile, game:GetService("HttpService"):JSONEncode(Data))
-			return getcustomasset(fontFile)
-		end)
-
-		if success and result then
-			return result
-		else
-			warn("Failed to load font " .. Name .. ": " .. tostring(result))
-			return defaultFont
-		end
-	end
-
-	local ProggyTiny = Register_Font("ProggyTiny", 200, "Normal", {
-		Id = "ProggyTiny.ttf",
-		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
-	})
-
-	local ProggyClean = Register_Font("ProggyClean", 200, "normal", {
-		Id = "ProggyClean.ttf",
-		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/ProggyClean.ttf"
-	})
-
-	local Pixel = Register_Font("Pixel", 200, "normal", {
-		Id = "Pixel.ttf",
-		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/pixel.ttf"
-	})
-
-	local Tahoma = Register_Font("Tahoma", 200, "normal", {
-		Id = "Tahoma.ttf",
-		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/tahoma-bold.ttf"
-	})
-
-	local Verdana = Register_Font("Verdana", 200, "normal", {
-		Id = "Verdana.ttf",
-		Url = "https://seraph.wtf/assets/verdana.ttf"
-	})
-
-	local Pixel2 = Register_Font("Pixel2", 200, "normal", {
-		Id = "Pixel2.ttf",
-		Url = "https://seraph.wtf/assets/pixelfont.ttf"
-	})
-
-	fonts = {
-		["TahomaBold"] = Font.new(ProggyTiny or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["ProggyClean"] = Font.new(ProggyClean or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Pixel"] = Font.new(Pixel or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Verdana"] = Font.new(Verdana or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Tahoma"] = Font.new(Tahoma or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Pixel2"] = Font.new(Pixel2 or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-	}
-
-	library.font = fonts.ProggyClean
-end
+library.font = fonts.ProggyClean
 --
 -- 
 
