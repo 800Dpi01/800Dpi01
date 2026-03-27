@@ -428,9 +428,18 @@ local sfx = {
 	["terraria slime"] = "rbxassetid://6916371803",
 }
 for _, file in listfiles("seraph/sounds/") do
-    -- Lấy tên file từ đường dẫn
-    local fileName = file:match("([^/\\]+)%.mp3$")
-    if fileName then
+    local success, fileName = pcall(function()
+        local parts = string.split(file, "sounds\\")
+        if parts[2] then
+            return parts[2]:gsub(".mp3", "")
+        else
+            -- Nếu không tìm thấy "sounds\\", thử tìm "sounds/"
+            parts = string.split(file, "sounds/")
+            return parts[2] and parts[2]:gsub(".mp3", "")
+        end
+    end)
+    
+    if success and fileName then
         sfx[fileName] = getcustomasset(file)
     end
 end
