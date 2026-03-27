@@ -434,12 +434,6 @@ local sfx = {
 --     end
 -- end
 
-for _, file in listfiles("seraph/sounds/") do
-    local fileName = file:match("([^/\\]+)%.mp3$")
-    if fileName then
-        sfx[fileName] = getcustomasset(file)
-    end
-end
 
 local vec2 = Vector2.new
 local vec3 = Vector3.new
