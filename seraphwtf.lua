@@ -291,29 +291,30 @@ task.spawn(function()
 
 	task.wait(0.25)
 
-	if not isfile("seraph/cache/seraphdata.gif") then
+	-- ĐOẠN CODE MỚI (đã sửa để skip file đã có)
+if not isfile("seraph/cache/seraphdata.gif") then
+    makefolder("seraph/gifs")
+    tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.1, 0)}):Play()
 
-		makefolder("seraph/gifs")
-
-		tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.1, 0)}):Play()
-
-		for i = 1, 150 do
-			local frame_translation = string.format("frame_%03d_delay-0.02s.png", i-1)
-			writefile(`seraph/gifs/{frame_translation}`, get("https://raw.githubusercontent.com/ravegirls/cdn/refs/heads/main/sequence/" .. frame_translation))
-
-			fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150)")
-			task.wait()
-
-
-		end
-		writefile("seraph/cache/seraphdata.gif", "<translation=\"completed\">")
-
-		task.wait(0.5)
-
-		tween_service:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-
-		task.wait(1)
-	end
+    -- THAY ĐỔI Ở ĐÂY: Kiểm tra từng file, nếu chưa có thì mới tải
+    for i = 1, 150 do
+        local frame_translation = string.format("frame_%03d_delay-0.02s.png", i-1)
+        local file_path = `seraph/gifs/{frame_translation}`
+        
+        -- CHỈ TẢI NẾU FILE CHƯA TỒN TẠI
+        if not isfile(file_path) then
+            writefile(file_path, get("https://raw.githubusercontent.com/ravegirls/cdn/refs/heads/main/sequence/" .. frame_translation))
+            fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150)")
+        else
+            -- Nếu file đã có, vẫn cập nhật text nhưng không tải lại
+            fps.Text = "We're geting things set up for you..".. (" (" .. i .. "/150) [cached]")
+        end
+        task.wait()  -- vẫn giữ delay để đồng bộ
+    end
+    
+    writefile("seraph/cache/seraphdata.gif", "<translation=\"completed\">")
+    -- ... phần còn lại giữ nguyên
+end
 
 	if not isfile("seraph/cache/images.cache") then
 
