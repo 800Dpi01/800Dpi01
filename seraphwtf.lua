@@ -428,8 +428,20 @@ local sfx = {
 	["terraria slime"] = "rbxassetid://6916371803",
 }
 for _, file in listfiles("seraph/sounds/") do
-	local fileName = string.split(file, "sounds\\")[2]:gsub(".mp3", "")
-	sfx[fileName] = getcustomasset(file)
+    -- CÁCH 1: Dùng string.gsub an toàn hơn
+    local fileName = string.gsub(file, "seraph/sounds/", "")
+    fileName = string.gsub(fileName, "%.mp3$", "")
+    
+    if fileName ~= file then  -- Nếu có thay đổi (là file .mp3)
+        sfx[fileName] = getcustomasset(file)
+    end
+    
+    -- HOẶC CÁCH 2: Kiểm tra trước khi dùng split
+    -- local parts = string.split(file, "sounds\\")
+    -- if parts[2] then
+    --     local fileName = parts[2]:gsub(".mp3", "")
+    --     sfx[fileName] = getcustomasset(file)
+    -- end
 end
 
 local vec2 = Vector2.new
