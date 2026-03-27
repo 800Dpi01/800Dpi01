@@ -683,8 +683,9 @@ local fonts = {}; do
 	end
 
 	local ProggyTiny = Register_Font("ProggyTiny", 200, "Normal", {
-		Id = "ProggyTiny.ttf",
-		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
+	    Id = "ProggyTiny.ttf",
+	    Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf"),  -- Thêm Font
+	    Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf"
 	})
 
 	local ProggyClean = Register_Font("ProggyClean", 200, "normal", {
