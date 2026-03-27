@@ -642,23 +642,19 @@ local config_flags = library.config_flags
 -- Font importing system 
 local fonts = {}; do
 	function Register_Font(Name, Weight, Style, Asset)
-		Asset.Id = library.directory .. "/fonts/" .. Asset.Id
 		local defaultFont = "rbxasset://fonts/families/Roboto.json"
-
-		if not isfile(Asset.Id) then
-			local success, result = pcall(function() return Asset.Font or get(Asset.Url) end)
-			if success and result then
-				writefile(Asset.Id, result)
-			else
-				warn("Failed to download font: " .. Name)
-				return defaultFont
-			end
-		end
-
-		local fontFile = Name .. ".font"
-		local fontPath = library.directory .. "/fonts/" .. fontFile
-
+		
 		local success, result = pcall(function()
+			Asset.Id = library.directory .. "/fonts/" .. Asset.Id
+			if not isfile(Asset.Id) then
+				local content = Asset.Font or get(Asset.Url)
+				if not content or type(content) ~= "string" or #content < 10 then
+					error("Download failed or invalid content")
+				end
+				writefile(Asset.Id, content)
+			end
+
+			local fontFile = Name .. ".font"
 			local Data = {
 				name = Name,
 				faces = {
@@ -677,15 +673,14 @@ local fonts = {}; do
 		if success and result then
 			return result
 		else
-			warn("Failed to register font: " .. Name)
+			warn("Failed to load font " .. Name .. ": " .. tostring(result))
 			return defaultFont
 		end
 	end
 
 	local ProggyTiny = Register_Font("ProggyTiny", 200, "Normal", {
-	    Id = "ProggyTiny.ttf",
-	    Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf"),  -- Thêm Font
-	    Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf"
+		Id = "ProggyTiny.ttf",
+		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
 	})
 
 	local ProggyClean = Register_Font("ProggyClean", 200, "normal", {
