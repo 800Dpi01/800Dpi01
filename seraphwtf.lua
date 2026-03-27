@@ -646,43 +646,20 @@ local fonts = {}; do
 		return "rbxasset://fonts/families/Roboto.json"
 	end
 
-	local ProggyTiny = Register_Font("ProggyTiny", 200, "Normal", {
-		Id = "ProggyTiny.ttf",
-		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
-	})
-
-	local ProggyClean = Register_Font("ProggyClean", 200, "normal", {
-		Id = "ProggyClean.ttf",
-		Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/ProggyClean.ttf"
-	})
-
-	local Pixel = Register_Font("Pixel", 200, "normal", {
-		Id = "Pixel.ttf",
-		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/pixel.ttf"
-	})
-
-	local Tahoma = Register_Font("Tahoma", 200, "normal", {
-		Id = "Tahoma.ttf",
-		Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/tahoma-bold.ttf"
-	})
-
-	local Verdana = Register_Font("Verdana", 200, "normal", {
-		Id = "Verdana.ttf",
-		Url = "https://seraph.wtf/assets/verdana.ttf"
-	})
-
-	local Pixel2 = Register_Font("Pixel2", 200, "normal", {
-		Id = "Pixel2.ttf",
-		Url = "https://seraph.wtf/assets/pixelfont.ttf"
-	})
+	local ProggyTiny = "rbxasset://fonts/families/Roboto.json"
+	local ProggyClean = "rbxasset://fonts/families/Roboto.json"
+	local Pixel = "rbxasset://fonts/families/Roboto.json"
+	local Tahoma = "rbxasset://fonts/families/Roboto.json"
+	local Verdana = "rbxasset://fonts/families/Roboto.json"
+	local Pixel2 = "rbxasset://fonts/families/Roboto.json"
 
 	fonts = {
-		["TahomaBold"] = Font.new(ProggyTiny or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["ProggyClean"] = Font.new(ProggyClean or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Pixel"] = Font.new(Pixel or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Verdana"] = Font.new(Verdana or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Tahoma"] = Font.new(Tahoma or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		["Pixel2"] = Font.new(Pixel2 or "rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["TahomaBold"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["ProggyClean"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["Pixel"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["Verdana"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["Tahoma"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		["Pixel2"] = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 	}
 
 	library.font = fonts.ProggyClean
