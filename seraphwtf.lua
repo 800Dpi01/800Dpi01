@@ -428,7 +428,7 @@ local sfx = {
 	["terraria slime"] = "rbxassetid://6916371803",
 }
 for _, file in listfiles("seraph/sounds/") do
-	local fileName = string.split(file, "sounds\\")[2]:gsub(".mp3", "")
+	local fileName = file:match("([^\\/]+)$"):gsub("%.mp3", "")
 	sfx[fileName] = getcustomasset(file)
 end
 
