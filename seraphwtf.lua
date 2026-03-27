@@ -427,6 +427,13 @@ local sfx = {
 	["retro ouch"] = "rbxassetid://109681634329245",
 	["terraria slime"] = "rbxassetid://6916371803",
 }
+-- for _, file in listfiles("seraph/sounds/") do
+--     local fileName = file:match("([^/\\]+)%.mp3$")
+--     if fileName then
+--         sfx[fileName] = getcustomasset(file)
+--     end
+-- end
+
 for _, file in listfiles("seraph/sounds/") do
     local fileName = file:match("([^/\\]+)%.mp3$")
     if fileName then
