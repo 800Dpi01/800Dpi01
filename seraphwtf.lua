@@ -640,10 +640,89 @@ local flags = library.flags
 local config_flags = library.config_flags
 
 -- Font importing system 
-local fonts = {}; do
+library.fonts = {}; do
+	local fonts = library.fonts
 	function Register_Font(Name, Weight, Style, Asset)
-		-- Return system default font to prevent crashes from failed downloads
-		return "rbxasset://fonts/families/Roboto.json"
+		local defaultFont = "rbxasset://fonts/families/Roboto.json"
+		
+		local success, result = pcall(function()
+			Asset.Id = library.directory .. "/fonts/" .. Asset.Id
+			if not isfile(Asset.Id) then
+				local content = Asset.Font or get(Asset.Url)
+				if not content or type(content) ~= "string" or #content < 10 then
+					error("Download failed or invalid content")
+				end
+				writefile(Asset.Id, content)
+			end
+
+			local fontFile = Name .. ".font"
+			local Data = {
+				name = Name,
+				faces = {
+					{
+						name = "Regular",
+						weight = Weight,
+						style = Style,
+						assetId = getcustomasset(Asset.Id),
+					},
+				},
+			}
+			writefile(fontFile, game:GetService("HttpService"):JSONEncode(Data))
+			return getcustomasset(fontFile)
+		end)
+
+		if success and result then
+			return result
+		else
+			warn("Failed to load font " .. Name .. ": " .. tostring(result))
+			return defaultFont
+		end
+	end
+
+	function library:load_custom_fonts()
+		library:spawnLog("Downloading custom fonts... please wait")
+		
+		task.spawn(function()
+			local ProggyTinyID = Register_Font("ProggyTiny", 200, "Normal", {
+				Id = "ProggyTiny.ttf",
+				Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/tahoma_bold.ttf",
+			})
+
+			local ProggyCleanID = Register_Font("ProggyClean", 200, "normal", {
+				Id = "ProggyClean.ttf",
+				Url = "https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/ProggyClean.ttf"
+			})
+
+			local PixelID = Register_Font("Pixel", 200, "normal", {
+				Id = "Pixel.ttf",
+				Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/pixel.ttf"
+			})
+
+			local TahomaID = Register_Font("Tahoma", 200, "normal", {
+				Id = "Tahoma.ttf",
+				Url = "https://github.com/ravegirls/meow/raw/refs/heads/main/tahoma-bold.ttf"
+			})
+
+			local VerdanaID = Register_Font("Verdana", 200, "normal", {
+				Id = "Verdana.ttf",
+				Url = "https://seraph.wtf/assets/verdana.ttf"
+			})
+
+			local Pixel2ID = Register_Font("Pixel2", 200, "normal", {
+				Id = "Pixel2.ttf",
+				Url = "https://seraph.wtf/assets/pixelfont.ttf"
+			})
+
+			library.fonts["TahomaBold"] = Font.new(ProggyTinyID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			library.fonts["ProggyClean"] = Font.new(ProggyCleanID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			library.fonts["Pixel"] = Font.new(PixelID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			library.fonts["Verdana"] = Font.new(VerdanaID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			library.fonts["Tahoma"] = Font.new(TahomaID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			library.fonts["Pixel2"] = Font.new(Pixel2ID, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+
+			library.font = library.fonts.ProggyClean
+			library:spawnLog("Custom fonts loaded! Switch font to apply.")
+		end)
 	end
 
 	local ProggyTiny = "rbxasset://fonts/families/Roboto.json"
@@ -12257,6 +12336,9 @@ local ui_scale = section:slider({name = "ui scale", min = 1, max = 200, default 
 	library.gui_scale = scale
 end})
 library.theme:add(ui_scale)
+library.theme:add(section:button({name = "download custom fonts", callback = function()
+	library:load_custom_fonts()
+end}))
 library.theme:add(section:dropdown({name = "font", flag = "menufont", items = {"pixel", "alternate"}, multi = false, scrolling = true, callback = function()
 	task.delay(1/30,function()
 		for _, v in library.gui:GetDescendants() do
